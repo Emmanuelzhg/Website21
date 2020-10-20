@@ -8,6 +8,7 @@ image: flags.jpg
 keywords: ""
 slug: blog4
 title: Nordic GDP composition
+
 ---
 
 ```{r, setup, echo=FALSE}
