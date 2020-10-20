@@ -3,7 +3,7 @@ categories:
 - "finance"
 - ""
 date: "2020-10-19T22:26:09-05:00"
-description: "Analysis of a trading strategy for the Croatian currency - Investment strategy"
+description: Analysis of a trading strategy for the Croatian currency - Investment strategy
 draft: false
 image: pic10.jpg
 keywords: ""

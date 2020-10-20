@@ -30,6 +30,20 @@ Ran a semi-marathon in August 2019 ! Next goal ➡Full Marathon !!
 ## Educational background
 I studied my undergrad in Business Administration with a major in Finance at **EDHEC Business School** from 2016 to 2019. As part of the degree, I had one semester abroad, I chose to go to **Hanyang University, Seoul South Korea**. Seoul was very different from Paris and the lifelong friends I made there definitely motivated me to study abroad for my master's degree and I was lucky enough to get admitted to **London Business School**, where I study right now.
 
+![Image](https://imgur.com/xUdFWKV.jpg)
+
+
+![Image](https://imgur.com/WnE939b.jpg)
+
+![Image](https://imgur.com/kjUSixJ.jpg)
+
+![Image](https://imgur.com/nLhxkro.jpg)
+
+![Image](https://imgur.com/uEdqNAG.jpg)
+
+![Image](https://imgur.com/3ahaUA9.jpg)
+
+
 
 ## Work experience
 I have acquired a 1 year work experience during my undergraduate studies. First, I interned at **Credit du Nord Retail Banking**. In fact, I used to be part of the **KYC team**. I then joined a French software start-up. It was a unique occasion to experience how innovative idea can be implemented. After that, I joined **Credit Mutuel Asset Management**, within the **Fund Accounting division**. Finally, I joined **Société Générale Corporate and Investment Banking** as a **Product Specialist for their Quantitative Investment Strategies** department.
