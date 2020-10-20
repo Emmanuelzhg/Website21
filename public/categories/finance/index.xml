@@ -9,19 +9,19 @@
     <lastBuildDate>Mon, 19 Oct 2020 22:26:09 -0500</lastBuildDate><atom:link href="/categories/finance/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Long Currency trade</title>
-      <link>/projects/currency-long/</link>
+      <link>/blogs/blog3/</link>
       <pubDate>Mon, 19 Oct 2020 22:26:09 -0500</pubDate>
       
-      <guid>/projects/currency-long/</guid>
+      <guid>/blogs/blog3/</guid>
       <description>knitr::opts_chunk$set(message = FALSE, warning = FALSE, tidy=FALSE, # display code as typedsize=&amp;quot;small&amp;quot;) # slightly smaller font for codeoptions(digits = 3)# default figure sizeknitr::opts_chunk$set(fig.width=6.75, fig.height=6.75,fig.align = &amp;quot;center&amp;quot;)Using R to study a potential currency trade The inspiration for this post actually comes from a trading strategy project I was doing in my investment fundamental course. I would normally have used excel for this type of analysis, but I decided to try R and I found it to be much more powerful at analyzing the trading strategy than excel would have been.</description>
     </item>
     
     <item>
       <title>Long Currency trade</title>
-      <link>/projects/currency-long/</link>
+      <link>/blogs/currency-long/</link>
       <pubDate>Mon, 19 Oct 2020 22:26:09 -0500</pubDate>
       
-      <guid>/projects/currency-long/</guid>
+      <guid>/blogs/currency-long/</guid>
       <description>knitr::opts_chunk$set(message = FALSE, warning = FALSE, tidy=FALSE, # display code as typedsize=&amp;quot;small&amp;quot;) # slightly smaller font for codeoptions(digits = 3)# default figure sizeknitr::opts_chunk$set(fig.width=6.75, fig.height=6.75,fig.align = &amp;quot;center&amp;quot;)Using R to study a potential currency trade The inspiration for this post actually comes from a trading strategy project I was doing in my investment fundamental course. I would normally have used excel for this type of analysis, but I decided to try R and I found it to be much more powerful at analyzing the trading strategy than excel would have been.</description>
     </item>
     

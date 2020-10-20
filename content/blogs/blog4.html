@@ -1,12 +1,12 @@
 ---
 categories:
 - "Economic analysis"
-date: "2020-10-19T22:26:09-05:00"
+date: "2020-10-16T22:26:09-05:00"
 description: A look at the Nordic economies
 draft: false
 image: flags.jpg
 keywords: ""
-slug: nordic-gdp
+slug: blog4
 title: Nordic GDP composition
 ---
 
@@ -2029,7 +2029,7 @@ gdp_plot1 %&gt;%
        x = &quot;&quot;)+
   #make sure the x-axis breaks equal the one on the picture
   scale_x_continuous(breaks = seq(1970, 2019, by = 10))</code></pre>
-<p><img src="/projects/nordic_files/figure-html/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/blog4_files/figure-html/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>So we see all components increasing over time - some more than others - but it is slightly hard to make out, so let us try and create a plot that shows the % components. To begin with let us calculate the GDP per country per year as we will need this to calculate the percentages. We want to do this because there is a difference between the GDP we calculate, and the GDP we were given in the original data set (as we will show below).</p>
 <pre class="r"><code>#First let us calculate the GDP given the inputs
 tidy_GDP_delta &lt;- tidy_GDP_nordics %&gt;% 
@@ -2159,7 +2159,7 @@ ggplot(gdp_plot2, aes(x = year,
   #make sure the x-axis breaks equal the one on the picture
   scale_x_continuous(breaks = seq(1970, 2019, by = 10))+
   scale_y_continuous(labels = scales::percent_format(accuracy = 1))</code></pre>
-<p><img src="/projects/nordic_files/figure-html/unnamed-chunk-5-1.png" width="960" style="display: block; margin: auto;" />
+<p><img src="/blogs/blog4_files/figure-html/unnamed-chunk-5-1.png" width="960" style="display: block; margin: auto;" />
 Denmark and Sweden look quite similar in their development and levels, while Norway in particular exported a lot during the 80’s, 90’s and 00’s. Why might this be? Well we can look at the characteristics of each economy.</p>
 <ul>
 <li><p>Denmark is a fairly diversified open economy with large sectors in transport, health care and agriculture. These sectors are relatively do require some substantial investments.</p></li>

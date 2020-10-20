@@ -1,7 +1,7 @@
 # Site settings
 baseURL = "https://emmanuelzheng.netlify.app/"
 languageCode = "en-us"
-title = "Emmanuel Zheng"output: html_document
+title = "Emmanuel Zheng"
 theme = "forty"
 
 # Enter your tracking code to enable Google Analytics
@@ -95,37 +95,37 @@ disqusShortname = ""
       title = "About Me"
       subtitle = "My personal journey"
       image = "Japan.jpg"
-      url = "projects/about-me"
+      url = "blogs/blog1"
 
     [[params.tiles.showcase]]
       title = "Quantitative Investment Strategy - Master Thesis work"
       subtitle = "Analyzing a Volatility-Target Strategy on french CAC40 Index"
       image = "QIS.jpg"
-      url = "projects/qis"
+      url = "blogs/qis"
 
     [[params.tiles.showcase]]
       title = "Croatian currency trade"
       subtitle = "Analyzing potential currency trade between the Crotian Kuna and the Euro"
       image = "pic03.jpg"
-      url = "projects/croatian-currency"
+      url = "blogs/blog3"
 
     [[params.tiles.showcase]]
       title = "Nordic GDP composition"
       subtitle = "Analysis of the three Nordic economies"
       image = "sweden.jpg"
-      url = "projects/nordic"
+      url = "blogs/blog4"
 
     [[params.tiles.showcase]]
       title = "Stocks Risk x Return Analysis"
       subtitle = "S&P500 vs Financials - 10 years Analysis"
       image = "stock.jpg"
-      url = "projects/sp500-financials-analysis"
+      url = "blogs/sp500-financials-analysis"
 
     [[params.tiles.showcase]]
       title = "Climate Change"
       subtitle = "Reality or Illusion?"
       image = "climate.jpg"
-      url = "projects/Climate-change"
+      url = "blogs/Climate-change"
     # You can make more showcases by copy and pasting the code above
 
   [params.blog]

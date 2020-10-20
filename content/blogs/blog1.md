@@ -10,7 +10,7 @@ description: ""
 draft: false
 image: image-mount.jpg
 keywords: ""
-slug: About me
+slug: blog1
 title: About me
 ---
 

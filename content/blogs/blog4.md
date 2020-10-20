@@ -1,12 +1,12 @@
 ---
 categories:
-""
-date: "2020-10-19T22:26:09-05:00"
+- "Economic analysis"
+date: "2020-10-16T22:26:09-05:00"
 description: A look at the Nordic economies
 draft: false
 image: flags.jpg
 keywords: ""
-slug: nordic
+slug: blog4
 title: Nordic GDP composition
 ---
 

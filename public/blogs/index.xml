@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Lifestyle on Emmanuel Zheng</title>
+    <title>Projects on Emmanuel Zheng</title>
     <link>/blogs/</link>
-    <description>Recent content in Lifestyle on Emmanuel Zheng</description>
+    <description>Recent content in Projects on Emmanuel Zheng</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 31 Oct 2017 22:27:21 -0500</lastBuildDate><atom:link href="/blogs/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 19 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="/blogs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Long Currency trade</title>
+      <link>/blogs/blog3/</link>
+      <pubDate>Mon, 19 Oct 2020 22:26:09 -0500</pubDate>
+      
+      <guid>/blogs/blog3/</guid>
+      <description>knitr::opts_chunk$set(message = FALSE, warning = FALSE, tidy=FALSE, # display code as typedsize=&amp;quot;small&amp;quot;) # slightly smaller font for codeoptions(digits = 3)# default figure sizeknitr::opts_chunk$set(fig.width=6.75, fig.height=6.75,fig.align = &amp;quot;center&amp;quot;)Using R to study a potential currency trade The inspiration for this post actually comes from a trading strategy project I was doing in my investment fundamental course. I would normally have used excel for this type of analysis, but I decided to try R and I found it to be much more powerful at analyzing the trading strategy than excel would have been.</description>
+    </item>
+    
     <item>
       <title>Long Currency trade</title>
       <link>/blogs/currency-long/</link>
@@ -14,6 +23,26 @@
       
       <guid>/blogs/currency-long/</guid>
       <description>knitr::opts_chunk$set(message = FALSE, warning = FALSE, tidy=FALSE, # display code as typedsize=&amp;quot;small&amp;quot;) # slightly smaller font for codeoptions(digits = 3)# default figure sizeknitr::opts_chunk$set(fig.width=6.75, fig.height=6.75,fig.align = &amp;quot;center&amp;quot;)Using R to study a potential currency trade The inspiration for this post actually comes from a trading strategy project I was doing in my investment fundamental course. I would normally have used excel for this type of analysis, but I decided to try R and I found it to be much more powerful at analyzing the trading strategy than excel would have been.</description>
+    </item>
+    
+    <item>
+      <title>Nordic GDP composition</title>
+      <link>/blogs/blog4/</link>
+      <pubDate>Fri, 16 Oct 2020 22:26:09 -0500</pubDate>
+      
+      <guid>/blogs/blog4/</guid>
+      <description>knitr::opts_chunk$set(message = FALSE, warning = FALSE, tidy=FALSE, # display code as typedsize=&amp;quot;small&amp;quot;) # slightly smaller font for codeoptions(digits = 3)# default figure sizeknitr::opts_chunk$set(fig.width=6.75, fig.height=6.75,fig.align = &amp;quot;center&amp;quot;)Nordic GDP composition In this project, we will look at the components of the different Nordic countries and then compare it to the rest of the world. There will be quite a lot of data wrangling, which is really good to know in R.</description>
+    </item>
+    
+    <item>
+      <title>About me</title>
+      <link>/blogs/blog1/</link>
+      <pubDate>Thu, 31 Oct 2019 21:28:43 -0500</pubDate>
+      
+      <guid>/blogs/blog1/</guid>
+      <description>Personal background I am 21 years old and grew up in Paris then moved to Mulhouse, France.
+A few facts about myself:
+Polyglot : French, English, Chinese, Japanese, German &amp;amp; Korean Exchange Studies 2018 Seoul, South Korea at Hanyang University (and loved it) Cleared CFA Level 1 Exam (Dec 2019) Realized my childhood dream of visiting Japan during Christmas 2018 Team ranked 2nd of Mirage EDHEC Business Game Dec 2019 (against more than 300 competitors) Ran a semi-marathon in August 2019 !</description>
     </item>
     
     <item>
@@ -31,15 +60,6 @@
       <pubDate>Tue, 31 Oct 2017 22:26:13 -0500</pubDate>
       
       <guid>/blogs/tempus/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Magna</title>
-      <link>/blogs/magna/</link>
-      <pubDate>Tue, 31 Oct 2017 22:26:09 -0500</pubDate>
-      
-      <guid>/blogs/magna/</guid>
       <description></description>
     </item>
     
