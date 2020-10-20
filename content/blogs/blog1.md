@@ -37,7 +37,7 @@ My family owns a retail clothing business in Mulhouse and thanks to that I acqui
 ![Image](https://www.ualberta.ca/business/media-library/international/images/outgoing/destinations/edhec-nice-campus1.jpg)
 
 ## Educational background
-I studied my undergrad in Business Administration with a major in Finance at **EDHEC Business School** from 2016 to 2019. As part of the degree, I had one semester abroad, I chose to go to **Hanyang University, Seoul South Korea**. Seoul was very different from Paris and the lifelong friends I made there definitely motivated me to study abroad for my master's degree and I was lucky enough to get admitted to **London Business School**, where I study right now.
+I studied my undergrad in Business Administration with a major in Finance at **EDHEC Business School** from 2016 to 2019. As part of the degree, I had one semester abroad, I chose to go to **Hanyang University, Seoul South Korea**. Seoul was very different from Paris and the lifelong friends I made there definitely motivated me to study abroad for my master's degree and I was lucky enough to get admitted to **London Business School** with a Merit Scholarship, where I study right now.
 
 ![Image](https://london.ac.uk/sites/default/files/styles/max_1300x1300/public/2017-10/london-business-school-Campus.jpg?itok=liDdbRa2.png)
 
