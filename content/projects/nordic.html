@@ -1,0 +1,2173 @@
+---
+categories:
+- "Economic analysis"
+date: "2020-10-19T22:26:09-05:00"
+description: A look at the Nordic economies
+draft: false
+image: flags.jpg
+keywords: ""
+slug: nordic-gdp
+title: Nordic GDP composition
+---
+
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+<link href="/rmarkdown-libs/lightable/lightable.css" rel="stylesheet" />
+
+
+<div id="nordic-gdp-composition" class="section level1">
+<h1>Nordic GDP composition</h1>
+<p>In this project, we will look at the components of the different Nordic countries and then compare it to the rest of the world. There will be quite a lot of data wrangling, which is really good to know in R. Contrary to excel, it is quite hard to change individual rows in R, which instead primarily works in columns, i.e. it is quite easy to subtract one column from another, but a lot harder to subtract one row from another. Therefore we want to shape our R data so it is tidy data. What exactly is tidy data? Well it depends on what we want to achieve, but basically we want a column for every variable we are interested in. Data can be tidy for one use case but non-tidy for another.</p>
+<p>To analyze the Nordic GDP data, we will use the following packages.</p>
+<pre class="r"><code>library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(GGally)
+library(readxl)
+library(here)
+library(skimr)
+library(janitor)
+library(broom)
+library(tidyquant)
+library(infer)
+library(openintro)
+library(tidyquant)
+library(kableExtra)</code></pre>
+<p>Our data comes from the <a href="https://unstats.un.org/unsd/snaama/Downloads">United Nations’ National Accounts Main Aggregates Database</a>, which contains estimates of total GDP and its components for all countries from 1970 to today. We will look at how GDP and its components have changed over time, and compare different countries and how much each component contributes to that country’s GDP. The file we will work with is <a href="http://unstats.un.org/unsd/amaapi/api/file/6">GDP and its breakdown at constant 2010 prices in US Dollars</a>. Let us start by loading the data and quickly skim it to see how it is how it is structured and organised.</p>
+<pre class="r"><code>UN_GDP_data  &lt;-  read_excel(here::here(&quot;data&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
+                sheet=&quot;Download-GDPconstant-USD-countr&quot;, # Sheet name
+                skip=2) # Number of rows to skip
+
+skim(UN_GDP_data)</code></pre>
+<table style='width: auto;'
+        class='table table-condensed'>
+<caption>
+<span id="tab:unnamed-chunk-1">Table 1: </span>Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+UN_GDP_data
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+3685
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+51
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+49
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Country
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+220
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IndicatorName
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+CountryID
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+4.39e+02
+</td>
+<td style="text-align:right;">
+2.54e+02
+</td>
+<td style="text-align:right;">
+4.00e+00
+</td>
+<td style="text-align:right;">
+2.14e+02
+</td>
+<td style="text-align:right;">
+4.40e+02
+</td>
+<td style="text-align:right;">
+6.60e+02
+</td>
+<td style="text-align:right;">
+8.94e+02
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2587&gt;&lt;U+2587&gt;&lt;U+2587&gt;&lt;U+2586&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1970
+</td>
+<td style="text-align:right;">
+572
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+3.28e+10
+</td>
+<td style="text-align:right;">
+2.03e+11
+</td>
+<td style="text-align:right;">
+-5.68e+11
+</td>
+<td style="text-align:right;">
+1.47e+08
+</td>
+<td style="text-align:right;">
+1.03e+09
+</td>
+<td style="text-align:right;">
+7.60e+09
+</td>
+<td style="text-align:right;">
+5.51e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1971
+</td>
+<td style="text-align:right;">
+573
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+3.43e+10
+</td>
+<td style="text-align:right;">
+2.09e+11
+</td>
+<td style="text-align:right;">
+-3.66e+11
+</td>
+<td style="text-align:right;">
+1.53e+08
+</td>
+<td style="text-align:right;">
+1.10e+09
+</td>
+<td style="text-align:right;">
+8.17e+09
+</td>
+<td style="text-align:right;">
+5.60e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1972
+</td>
+<td style="text-align:right;">
+574
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+3.63e+10
+</td>
+<td style="text-align:right;">
+2.20e+11
+</td>
+<td style="text-align:right;">
+-3.88e+11
+</td>
+<td style="text-align:right;">
+1.57e+08
+</td>
+<td style="text-align:right;">
+1.13e+09
+</td>
+<td style="text-align:right;">
+8.68e+09
+</td>
+<td style="text-align:right;">
+5.87e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1973
+</td>
+<td style="text-align:right;">
+573
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+3.87e+10
+</td>
+<td style="text-align:right;">
+2.32e+11
+</td>
+<td style="text-align:right;">
+-4.53e+11
+</td>
+<td style="text-align:right;">
+1.67e+08
+</td>
+<td style="text-align:right;">
+1.17e+09
+</td>
+<td style="text-align:right;">
+9.19e+09
+</td>
+<td style="text-align:right;">
+6.16e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1974
+</td>
+<td style="text-align:right;">
+573
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+3.96e+10
+</td>
+<td style="text-align:right;">
+2.33e+11
+</td>
+<td style="text-align:right;">
+-5.66e+11
+</td>
+<td style="text-align:right;">
+1.79e+08
+</td>
+<td style="text-align:right;">
+1.32e+09
+</td>
+<td style="text-align:right;">
+1.00e+10
+</td>
+<td style="text-align:right;">
+6.17e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1975
+</td>
+<td style="text-align:right;">
+574
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+4.00e+10
+</td>
+<td style="text-align:right;">
+2.34e+11
+</td>
+<td style="text-align:right;">
+-2.50e+11
+</td>
+<td style="text-align:right;">
+1.78e+08
+</td>
+<td style="text-align:right;">
+1.32e+09
+</td>
+<td style="text-align:right;">
+1.04e+10
+</td>
+<td style="text-align:right;">
+6.10e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1976
+</td>
+<td style="text-align:right;">
+574
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+4.21e+10
+</td>
+<td style="text-align:right;">
+2.45e+11
+</td>
+<td style="text-align:right;">
+-3.08e+11
+</td>
+<td style="text-align:right;">
+1.90e+08
+</td>
+<td style="text-align:right;">
+1.38e+09
+</td>
+<td style="text-align:right;">
+1.09e+10
+</td>
+<td style="text-align:right;">
+6.36e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1977
+</td>
+<td style="text-align:right;">
+574
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+4.38e+10
+</td>
+<td style="text-align:right;">
+2.55e+11
+</td>
+<td style="text-align:right;">
+-3.30e+11
+</td>
+<td style="text-align:right;">
+1.99e+08
+</td>
+<td style="text-align:right;">
+1.46e+09
+</td>
+<td style="text-align:right;">
+1.16e+10
+</td>
+<td style="text-align:right;">
+6.64e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1978
+</td>
+<td style="text-align:right;">
+572
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+4.56e+10
+</td>
+<td style="text-align:right;">
+2.67e+11
+</td>
+<td style="text-align:right;">
+-3.26e+11
+</td>
+<td style="text-align:right;">
+2.08e+08
+</td>
+<td style="text-align:right;">
+1.50e+09
+</td>
+<td style="text-align:right;">
+1.19e+10
+</td>
+<td style="text-align:right;">
+6.96e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1979
+</td>
+<td style="text-align:right;">
+573
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:right;">
+4.74e+10
+</td>
+<td style="text-align:right;">
+2.76e+11
+</td>
+<td style="text-align:right;">
+-3.84e+11
+</td>
+<td style="text-align:right;">
+2.17e+08
+</td>
+<td style="text-align:right;">
+1.60e+09
+</td>
+<td style="text-align:right;">
+1.27e+10
+</td>
+<td style="text-align:right;">
+7.14e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1980
+</td>
+<td style="text-align:right;">
+571
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+4.83e+10
+</td>
+<td style="text-align:right;">
+2.78e+11
+</td>
+<td style="text-align:right;">
+-3.39e+11
+</td>
+<td style="text-align:right;">
+2.29e+08
+</td>
+<td style="text-align:right;">
+1.61e+09
+</td>
+<td style="text-align:right;">
+1.29e+10
+</td>
+<td style="text-align:right;">
+7.15e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1981
+</td>
+<td style="text-align:right;">
+568
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+4.90e+10
+</td>
+<td style="text-align:right;">
+2.83e+11
+</td>
+<td style="text-align:right;">
+-3.33e+11
+</td>
+<td style="text-align:right;">
+2.33e+08
+</td>
+<td style="text-align:right;">
+1.64e+09
+</td>
+<td style="text-align:right;">
+1.35e+10
+</td>
+<td style="text-align:right;">
+7.26e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1982
+</td>
+<td style="text-align:right;">
+568
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+4.93e+10
+</td>
+<td style="text-align:right;">
+2.85e+11
+</td>
+<td style="text-align:right;">
+-2.79e+11
+</td>
+<td style="text-align:right;">
+2.32e+08
+</td>
+<td style="text-align:right;">
+1.63e+09
+</td>
+<td style="text-align:right;">
+1.36e+10
+</td>
+<td style="text-align:right;">
+7.26e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1983
+</td>
+<td style="text-align:right;">
+568
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+5.06e+10
+</td>
+<td style="text-align:right;">
+2.94e+11
+</td>
+<td style="text-align:right;">
+-4.06e+10
+</td>
+<td style="text-align:right;">
+2.35e+08
+</td>
+<td style="text-align:right;">
+1.65e+09
+</td>
+<td style="text-align:right;">
+1.39e+10
+</td>
+<td style="text-align:right;">
+7.43e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1984
+</td>
+<td style="text-align:right;">
+568
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+5.28e+10
+</td>
+<td style="text-align:right;">
+3.09e+11
+</td>
+<td style="text-align:right;">
+-4.38e+10
+</td>
+<td style="text-align:right;">
+2.47e+08
+</td>
+<td style="text-align:right;">
+1.72e+09
+</td>
+<td style="text-align:right;">
+1.45e+10
+</td>
+<td style="text-align:right;">
+7.91e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1985
+</td>
+<td style="text-align:right;">
+567
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+5.45e+10
+</td>
+<td style="text-align:right;">
+3.22e+11
+</td>
+<td style="text-align:right;">
+-8.74e+10
+</td>
+<td style="text-align:right;">
+2.58e+08
+</td>
+<td style="text-align:right;">
+1.77e+09
+</td>
+<td style="text-align:right;">
+1.46e+10
+</td>
+<td style="text-align:right;">
+8.20e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1986
+</td>
+<td style="text-align:right;">
+567
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+5.64e+10
+</td>
+<td style="text-align:right;">
+3.33e+11
+</td>
+<td style="text-align:right;">
+-3.50e+10
+</td>
+<td style="text-align:right;">
+2.74e+08
+</td>
+<td style="text-align:right;">
+1.80e+09
+</td>
+<td style="text-align:right;">
+1.50e+10
+</td>
+<td style="text-align:right;">
+8.47e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1987
+</td>
+<td style="text-align:right;">
+566
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+5.85e+10
+</td>
+<td style="text-align:right;">
+3.45e+11
+</td>
+<td style="text-align:right;">
+-2.70e+10
+</td>
+<td style="text-align:right;">
+2.77e+08
+</td>
+<td style="text-align:right;">
+1.83e+09
+</td>
+<td style="text-align:right;">
+1.55e+10
+</td>
+<td style="text-align:right;">
+8.77e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1988
+</td>
+<td style="text-align:right;">
+565
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+6.12e+10
+</td>
+<td style="text-align:right;">
+3.60e+11
+</td>
+<td style="text-align:right;">
+-3.60e+10
+</td>
+<td style="text-align:right;">
+2.86e+08
+</td>
+<td style="text-align:right;">
+1.92e+09
+</td>
+<td style="text-align:right;">
+1.56e+10
+</td>
+<td style="text-align:right;">
+9.19e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1989
+</td>
+<td style="text-align:right;">
+547
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:right;">
+6.30e+10
+</td>
+<td style="text-align:right;">
+3.71e+11
+</td>
+<td style="text-align:right;">
+-2.98e+10
+</td>
+<td style="text-align:right;">
+3.02e+08
+</td>
+<td style="text-align:right;">
+1.95e+09
+</td>
+<td style="text-align:right;">
+1.59e+10
+</td>
+<td style="text-align:right;">
+9.41e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1990
+</td>
+<td style="text-align:right;">
+80
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:right;">
+6.01e+10
+</td>
+<td style="text-align:right;">
+3.58e+11
+</td>
+<td style="text-align:right;">
+-3.53e+10
+</td>
+<td style="text-align:right;">
+3.63e+08
+</td>
+<td style="text-align:right;">
+2.27e+09
+</td>
+<td style="text-align:right;">
+1.57e+10
+</td>
+<td style="text-align:right;">
+9.57e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1991
+</td>
+<td style="text-align:right;">
+161
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+5.89e+10
+</td>
+<td style="text-align:right;">
+3.61e+11
+</td>
+<td style="text-align:right;">
+-3.21e+10
+</td>
+<td style="text-align:right;">
+3.51e+08
+</td>
+<td style="text-align:right;">
+2.17e+09
+</td>
+<td style="text-align:right;">
+1.43e+10
+</td>
+<td style="text-align:right;">
+9.56e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1992
+</td>
+<td style="text-align:right;">
+160
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+6.00e+10
+</td>
+<td style="text-align:right;">
+3.70e+11
+</td>
+<td style="text-align:right;">
+-2.99e+10
+</td>
+<td style="text-align:right;">
+3.48e+08
+</td>
+<td style="text-align:right;">
+2.14e+09
+</td>
+<td style="text-align:right;">
+1.47e+10
+</td>
+<td style="text-align:right;">
+9.76e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1993
+</td>
+<td style="text-align:right;">
+160
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+6.07e+10
+</td>
+<td style="text-align:right;">
+3.76e+11
+</td>
+<td style="text-align:right;">
+-4.93e+10
+</td>
+<td style="text-align:right;">
+3.35e+08
+</td>
+<td style="text-align:right;">
+2.06e+09
+</td>
+<td style="text-align:right;">
+1.47e+10
+</td>
+<td style="text-align:right;">
+9.96e+12
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1994
+</td>
+<td style="text-align:right;">
+177
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+6.29e+10
+</td>
+<td style="text-align:right;">
+3.89e+11
+</td>
+<td style="text-align:right;">
+-5.84e+10
+</td>
+<td style="text-align:right;">
+3.55e+08
+</td>
+<td style="text-align:right;">
+2.11e+09
+</td>
+<td style="text-align:right;">
+1.52e+10
+</td>
+<td style="text-align:right;">
+1.03e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1995
+</td>
+<td style="text-align:right;">
+170
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+6.50e+10
+</td>
+<td style="text-align:right;">
+3.99e+11
+</td>
+<td style="text-align:right;">
+-1.96e+11
+</td>
+<td style="text-align:right;">
+3.82e+08
+</td>
+<td style="text-align:right;">
+2.22e+09
+</td>
+<td style="text-align:right;">
+1.56e+10
+</td>
+<td style="text-align:right;">
+1.06e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1996
+</td>
+<td style="text-align:right;">
+169
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+6.72e+10
+</td>
+<td style="text-align:right;">
+4.12e+11
+</td>
+<td style="text-align:right;">
+-2.55e+11
+</td>
+<td style="text-align:right;">
+4.00e+08
+</td>
+<td style="text-align:right;">
+2.26e+09
+</td>
+<td style="text-align:right;">
+1.63e+10
+</td>
+<td style="text-align:right;">
+1.10e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1997
+</td>
+<td style="text-align:right;">
+170
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+6.99e+10
+</td>
+<td style="text-align:right;">
+4.27e+11
+</td>
+<td style="text-align:right;">
+-2.86e+11
+</td>
+<td style="text-align:right;">
+4.23e+08
+</td>
+<td style="text-align:right;">
+2.42e+09
+</td>
+<td style="text-align:right;">
+1.73e+10
+</td>
+<td style="text-align:right;">
+1.15e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1998
+</td>
+<td style="text-align:right;">
+173
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+7.17e+10
+</td>
+<td style="text-align:right;">
+4.42e+11
+</td>
+<td style="text-align:right;">
+-1.91e+11
+</td>
+<td style="text-align:right;">
+4.51e+08
+</td>
+<td style="text-align:right;">
+2.64e+09
+</td>
+<td style="text-align:right;">
+1.74e+10
+</td>
+<td style="text-align:right;">
+1.19e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1999
+</td>
+<td style="text-align:right;">
+173
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+7.43e+10
+</td>
+<td style="text-align:right;">
+4.59e+11
+</td>
+<td style="text-align:right;">
+-2.53e+10
+</td>
+<td style="text-align:right;">
+4.45e+08
+</td>
+<td style="text-align:right;">
+2.60e+09
+</td>
+<td style="text-align:right;">
+1.80e+10
+</td>
+<td style="text-align:right;">
+1.24e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2000
+</td>
+<td style="text-align:right;">
+171
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+7.77e+10
+</td>
+<td style="text-align:right;">
+4.77e+11
+</td>
+<td style="text-align:right;">
+-1.26e+10
+</td>
+<td style="text-align:right;">
+4.73e+08
+</td>
+<td style="text-align:right;">
+2.75e+09
+</td>
+<td style="text-align:right;">
+1.90e+10
+</td>
+<td style="text-align:right;">
+1.29e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2001
+</td>
+<td style="text-align:right;">
+171
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+7.92e+10
+</td>
+<td style="text-align:right;">
+4.84e+11
+</td>
+<td style="text-align:right;">
+-4.94e+10
+</td>
+<td style="text-align:right;">
+4.95e+08
+</td>
+<td style="text-align:right;">
+2.88e+09
+</td>
+<td style="text-align:right;">
+1.97e+10
+</td>
+<td style="text-align:right;">
+1.30e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2002
+</td>
+<td style="text-align:right;">
+170
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+8.09e+10
+</td>
+<td style="text-align:right;">
+4.93e+11
+</td>
+<td style="text-align:right;">
+-2.82e+10
+</td>
+<td style="text-align:right;">
+5.30e+08
+</td>
+<td style="text-align:right;">
+3.04e+09
+</td>
+<td style="text-align:right;">
+2.01e+10
+</td>
+<td style="text-align:right;">
+1.32e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2003
+</td>
+<td style="text-align:right;">
+172
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+8.35e+10
+</td>
+<td style="text-align:right;">
+5.06e+11
+</td>
+<td style="text-align:right;">
+-2.52e+10
+</td>
+<td style="text-align:right;">
+5.37e+08
+</td>
+<td style="text-align:right;">
+3.18e+09
+</td>
+<td style="text-align:right;">
+2.15e+10
+</td>
+<td style="text-align:right;">
+1.36e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2004
+</td>
+<td style="text-align:right;">
+169
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+8.75e+10
+</td>
+<td style="text-align:right;">
+5.24e+11
+</td>
+<td style="text-align:right;">
+-1.89e+11
+</td>
+<td style="text-align:right;">
+6.03e+08
+</td>
+<td style="text-align:right;">
+3.40e+09
+</td>
+<td style="text-align:right;">
+2.28e+10
+</td>
+<td style="text-align:right;">
+1.40e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2005
+</td>
+<td style="text-align:right;">
+133
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+9.06e+10
+</td>
+<td style="text-align:right;">
+5.39e+11
+</td>
+<td style="text-align:right;">
+-1.08e+11
+</td>
+<td style="text-align:right;">
+6.13e+08
+</td>
+<td style="text-align:right;">
+3.52e+09
+</td>
+<td style="text-align:right;">
+2.42e+10
+</td>
+<td style="text-align:right;">
+1.45e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2006
+</td>
+<td style="text-align:right;">
+131
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+9.49e+10
+</td>
+<td style="text-align:right;">
+5.56e+11
+</td>
+<td style="text-align:right;">
+-5.09e+10
+</td>
+<td style="text-align:right;">
+6.53e+08
+</td>
+<td style="text-align:right;">
+3.77e+09
+</td>
+<td style="text-align:right;">
+2.59e+10
+</td>
+<td style="text-align:right;">
+1.49e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2007
+</td>
+<td style="text-align:right;">
+131
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+9.92e+10
+</td>
+<td style="text-align:right;">
+5.70e+11
+</td>
+<td style="text-align:right;">
+-2.13e+11
+</td>
+<td style="text-align:right;">
+7.05e+08
+</td>
+<td style="text-align:right;">
+4.06e+09
+</td>
+<td style="text-align:right;">
+2.74e+10
+</td>
+<td style="text-align:right;">
+1.51e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2008
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:right;">
+1.00e+11
+</td>
+<td style="text-align:right;">
+5.71e+11
+</td>
+<td style="text-align:right;">
+-3.26e+11
+</td>
+<td style="text-align:right;">
+7.44e+08
+</td>
+<td style="text-align:right;">
+4.29e+09
+</td>
+<td style="text-align:right;">
+2.88e+10
+</td>
+<td style="text-align:right;">
+1.51e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2009
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:right;">
+9.77e+10
+</td>
+<td style="text-align:right;">
+5.62e+11
+</td>
+<td style="text-align:right;">
+-1.64e+11
+</td>
+<td style="text-align:right;">
+6.62e+08
+</td>
+<td style="text-align:right;">
+4.15e+09
+</td>
+<td style="text-align:right;">
+2.83e+10
+</td>
+<td style="text-align:right;">
+1.47e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2010
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:right;">
+1.03e+11
+</td>
+<td style="text-align:right;">
+5.80e+11
+</td>
+<td style="text-align:right;">
+-5.11e+09
+</td>
+<td style="text-align:right;">
+7.39e+08
+</td>
+<td style="text-align:right;">
+4.40e+09
+</td>
+<td style="text-align:right;">
+2.96e+10
+</td>
+<td style="text-align:right;">
+1.50e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2011
+</td>
+<td style="text-align:right;">
+114
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:right;">
+1.07e+11
+</td>
+<td style="text-align:right;">
+5.96e+11
+</td>
+<td style="text-align:right;">
+-9.68e+10
+</td>
+<td style="text-align:right;">
+7.69e+08
+</td>
+<td style="text-align:right;">
+4.60e+09
+</td>
+<td style="text-align:right;">
+3.07e+10
+</td>
+<td style="text-align:right;">
+1.52e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2012
+</td>
+<td style="text-align:right;">
+114
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:right;">
+1.09e+11
+</td>
+<td style="text-align:right;">
+6.10e+11
+</td>
+<td style="text-align:right;">
+-1.19e+11
+</td>
+<td style="text-align:right;">
+7.56e+08
+</td>
+<td style="text-align:right;">
+4.76e+09
+</td>
+<td style="text-align:right;">
+3.16e+10
+</td>
+<td style="text-align:right;">
+1.56e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013
+</td>
+<td style="text-align:right;">
+131
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+1.13e+11
+</td>
+<td style="text-align:right;">
+6.26e+11
+</td>
+<td style="text-align:right;">
+-1.93e+10
+</td>
+<td style="text-align:right;">
+7.91e+08
+</td>
+<td style="text-align:right;">
+5.14e+09
+</td>
+<td style="text-align:right;">
+3.36e+10
+</td>
+<td style="text-align:right;">
+1.59e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2014
+</td>
+<td style="text-align:right;">
+133
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+1.16e+11
+</td>
+<td style="text-align:right;">
+6.45e+11
+</td>
+<td style="text-align:right;">
+-2.45e+10
+</td>
+<td style="text-align:right;">
+8.16e+08
+</td>
+<td style="text-align:right;">
+5.34e+09
+</td>
+<td style="text-align:right;">
+3.38e+10
+</td>
+<td style="text-align:right;">
+1.62e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2015
+</td>
+<td style="text-align:right;">
+134
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+1.19e+11
+</td>
+<td style="text-align:right;">
+6.66e+11
+</td>
+<td style="text-align:right;">
+-1.18e+11
+</td>
+<td style="text-align:right;">
+8.35e+08
+</td>
+<td style="text-align:right;">
+5.36e+09
+</td>
+<td style="text-align:right;">
+3.46e+10
+</td>
+<td style="text-align:right;">
+1.67e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2016
+</td>
+<td style="text-align:right;">
+136
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+1.22e+11
+</td>
+<td style="text-align:right;">
+6.84e+11
+</td>
+<td style="text-align:right;">
+-2.95e+10
+</td>
+<td style="text-align:right;">
+8.56e+08
+</td>
+<td style="text-align:right;">
+5.49e+09
+</td>
+<td style="text-align:right;">
+3.50e+10
+</td>
+<td style="text-align:right;">
+1.70e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2017
+</td>
+<td style="text-align:right;">
+143
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+1.27e+11
+</td>
+<td style="text-align:right;">
+7.05e+11
+</td>
+<td style="text-align:right;">
+-2.81e+10
+</td>
+<td style="text-align:right;">
+8.77e+08
+</td>
+<td style="text-align:right;">
+5.69e+09
+</td>
+<td style="text-align:right;">
+3.66e+10
+</td>
+<td style="text-align:right;">
+1.73e+13
+</td>
+<td style="text-align:left;">
+&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;&lt;U+2581&gt;
+</td>
+</tr>
+</tbody>
+</table>
+<p>As can be seen every year’s value is a column. If we want to compare data between countries, this is not tidy, so instead we want one column with the country, one column with the year, and one column with the value. Let us also work in billions and change the name of the indicators we want to work with (recall that GDP = C + I + G -NX).</p>
+<pre class="r"><code># First we make the data tidy
+tidy_GDP_data  &lt;-  UN_GDP_data %&gt;% 
+  pivot_longer(cols = !1:3, names_to = &quot;year&quot;, values_to = &quot;gdp_contribution&quot;) %&gt;% 
+ 
+  #we express gdp in billions, and furthermore we change the name of some of the indicators (only the ones we will use later)
+   mutate(gdp_contribution = gdp_contribution / 10^9,
+         
+         IndicatorName = case_when(
+           
+           IndicatorName == &#39;Household consumption expenditure (including Non-profit institutions serving households)&#39; ~ &quot;Household expenditure&quot;,
+           
+           
+IndicatorName == &#39;General government final consumption expenditure&#39; ~ &quot;Government expenditure&quot;,
+
+IndicatorName == &#39;Exports of goods and services&#39; ~ &quot;Exports&quot;,
+
+IndicatorName == &#39;Imports of goods and services&#39; ~ &quot;Imports&quot;,
+
+IndicatorName == &#39;Gross Domestic Product (GDP)&#39; ~ &quot;GDP (given)&quot;,      
+
+TRUE ~ IndicatorName),
+
+year = as.numeric(year)) %&gt;% 
+
+filter(IndicatorName %in% c(&quot;Gross capital formation&quot;,&quot;Household expenditure&quot;, &quot;Government expenditure&quot;, &quot;Exports&quot;, &quot;Imports&quot;, &quot;GDP (given)&quot;))
+    
+
+
+# Let us compare GDP components for the Nordics
+country_list &lt;- c(&quot;Sweden&quot;,&quot;Denmark&quot;, &quot;Norway&quot;)
+# we filter only for the countries in the list.
+tidy_GDP_nordics &lt;- tidy_GDP_data %&gt;% 
+  filter(Country %in% country_list)</code></pre>
+<p>Let us now plot the data.</p>
+<pre class="r"><code># fix levels
+tidy_GDP_nordics$IndicatorName &lt;- tidy_GDP_nordics$IndicatorName %&gt;% 
+  factor(levels = c(&quot;Gross capital formation&quot;, &quot;Exports&quot;, &quot;Government expenditure&quot;, &quot;Household expenditure&quot;, &quot;Imports&quot;, &quot;GDP (given)&quot;))
+
+
+#Furthermore we remove the GDP given column for the plot below
+
+gdp_plot1 &lt;- tidy_GDP_nordics %&gt;% 
+  filter(IndicatorName != &quot;GDP (given)&quot;)
+
+#let us create the plot
+gdp_plot1 %&gt;% 
+  ggplot(aes(x = year,
+             y = gdp_contribution,
+             group = IndicatorName))+
+  #create line
+  geom_line(aes(color = IndicatorName),
+            size = 1)+
+  # we use faceting so we can see it by countries
+  facet_wrap(~ Country)+
+  #aesthetics + titles
+  theme_bw()+
+  theme(legend.title = element_blank())+
+  labs(title = &quot;GDP components over time&quot;,
+       subtitle = &quot;In constant 2010 USD&quot;,
+       y = &quot;Billion US$&quot;,
+       x = &quot;&quot;)+
+  #make sure the x-axis breaks equal the one on the picture
+  scale_x_continuous(breaks = seq(1970, 2019, by = 10))</code></pre>
+<p><img src="/projects/nordic_files/figure-html/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>So we see all components increasing over time - some more than others - but it is slightly hard to make out, so let us try and create a plot that shows the % components. To begin with let us calculate the GDP per country per year as we will need this to calculate the percentages. We want to do this because there is a difference between the GDP we calculate, and the GDP we were given in the original data set (as we will show below).</p>
+<pre class="r"><code>#First let us calculate the GDP given the inputs
+tidy_GDP_delta &lt;- tidy_GDP_nordics %&gt;% 
+  #We remove the given GDP
+  filter(IndicatorName != &quot;GDP (given)&quot;) %&gt;%
+  #We make imports value become negative (as it subtracts from GDP)
+  mutate(gdp_contribution = ifelse(IndicatorName == &quot;Imports&quot;,
+                                   -gdp_contribution,
+                                   gdp_contribution)) %&gt;% 
+  #Then we group by year and calculate the sum
+  group_by(year, Country) %&gt;% 
+  summarize(gdp_calc = sum(gdp_contribution)) 
+
+#Now we make a dataframe only consiting of the given GDP
+tidy_GDP_given &lt;- tidy_GDP_nordics %&gt;% 
+  filter(IndicatorName == &quot;GDP (given)&quot;)
+
+# we then join this with the original data frame
+
+left_join(tidy_GDP_delta, tidy_GDP_given, by = c(&quot;year&quot;, &quot;Country&quot;)) %&gt;% 
+  #And finally we calculate the absolute and relative differences
+  group_by(year, Country) %&gt;% 
+  summarize(absolute_diff = gdp_contribution-gdp_calc,
+            
+            percentage_diff = absolute_diff / gdp_contribution*100) %&gt;% 
+  #Let us find it by year
+  group_by(Country) %&gt;% 
+  summarize(absolute_diff = mean(absolute_diff),
+            percentage_diff = mean(percentage_diff)) %&gt;% 
+  kable(caption = &quot;Average annual difference between calculated and given GDP (negative values show a higher calculated GDP)&quot;,
+             col.names = c(&quot;Country&quot;, &quot;Absolute difference (billion USD)&quot;, &quot;Percentage difference&quot;),
+        #Fixes number of decimal points     
+        digits = 1,
+        # Adds thousand decimals and does not include scientific notation     
+        format.args = list(scientific = FALSE)) %&gt;%  
+  kable_material_dark(&quot;striped&quot;, full_width = FALSE)</code></pre>
+<table class=" lightable-material-dark lightable-striped" style='font-family: "Source Sans Pro", helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+<caption>
+<span id="tab:unnamed-chunk-4">Table 2: </span>Average annual difference between calculated and given GDP (negative values show a higher calculated GDP)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Country
+</th>
+<th style="text-align:right;">
+Absolute difference (billion USD)
+</th>
+<th style="text-align:right;">
+Percentage difference
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Denmark
+</td>
+<td style="text-align:right;">
+2.0
+</td>
+<td style="text-align:right;">
+0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Norway
+</td>
+<td style="text-align:right;">
+3.0
+</td>
+<td style="text-align:right;">
+1.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sweden
+</td>
+<td style="text-align:right;">
+-6.3
+</td>
+<td style="text-align:right;">
+-2.3
+</td>
+</tr>
+</tbody>
+</table>
+<p>Instead of showing imports and exports, let us instead show net exports (exports - imports). Now we have a problem with tidy data again, as we cannot subtract rows from each other. So we have to transform so that each indicator has its own value, create a new column for net exports, and then retransform the data back as it looked before.</p>
+<pre class="r"><code>#Firstly let us find net exports. The logic works like this:
+
+gdp_plot2 &lt;- tidy_GDP_nordics %&gt;% 
+  #We first make it wide format so we can mutate a new column
+  pivot_wider(names_from = IndicatorName, values_from = gdp_contribution) %&gt;% 
+  #we find net exports by subtracting imports from exports
+  mutate(&quot;Net exports&quot; = (Exports - Imports)) %&gt;% 
+  #we transfer it back into longer format
+  pivot_longer(cols = c(4:10), 
+               names_to = &quot;IndicatorName&quot;, 
+               values_to = &quot;gdp_contribution&quot;) %&gt;% 
+  #finally we join with the df we created earlier that has the calculated gdp
+  left_join(tidy_GDP_delta, by = c(&quot;year&quot;, &quot;Country&quot;)) %&gt;% 
+  #Now we can calculate the % of gdp that each indicator has
+  mutate(gdp_percentage = gdp_contribution / gdp_calc) %&gt;% 
+  #finally let us filter for only what we need
+  filter(IndicatorName %in% c(&quot;Household expenditure&quot;, &quot;Government expenditure&quot;, &quot;Gross capital formation&quot;, &quot;Net exports&quot;))
+
+#let us now recreate the plot
+ggplot(gdp_plot2, aes(x = year,
+                      y = gdp_percentage,
+                      group = IndicatorName))+
+  geom_line()+
+  #create line
+  geom_line(aes(color = IndicatorName),
+            size = 1)+
+  # we use faceting so we can see it by countries
+  facet_wrap(~ Country)+
+  #aesthetics + titles
+  theme_bw()+
+  theme(legend.title = element_blank())+
+  labs(title = &quot;Development in components of GDP&quot;,
+       subtitle = &quot;&quot;,
+       y = &quot;Proportion&quot;,
+       x = &quot;&quot;,
+       caption = &quot;Source: United Nations&quot;)+
+  #make sure the x-axis breaks equal the one on the picture
+  scale_x_continuous(breaks = seq(1970, 2019, by = 10))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))</code></pre>
+<p><img src="/projects/nordic_files/figure-html/unnamed-chunk-5-1.png" width="960" style="display: block; margin: auto;" />
+Denmark and Sweden look quite similar in their development and levels, while Norway in particular exported a lot during the 80’s, 90’s and 00’s. Why might this be? Well we can look at the characteristics of each economy.</p>
+<ul>
+<li><p>Denmark is a fairly diversified open economy with large sectors in transport, health care and agriculture. These sectors are relatively do require some substantial investments.</p></li>
+<li><p>Sweden is a very industry-heavy economy producing a lot of durable goods. This requires a lot of investment as well. Sweden has been successful these past couple of years in exporting some of their companies abroad, e.g. Ikea and H&amp;M, which can have contributed to their increase in net exports.</p></li>
+<li><p>Norway is very oil-centric. Most large and mid-sized Norwegian companies are in some way related to the O&amp;G sector. This might be one of the reasons why we see a large increase in the net exports followed by a large decrease, as we have seen a continuous decrease in the oil price after the financial crisis.</p></li>
+</ul>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>This project taught me the importance of data wrangling. It is a bit hard to understand what tidy data is, but once you are able to see it, it makes one’s life in R so much simpler, and allows you to execute commands, which would otherwise be much harder to do.</p>
+</div>
+</div>

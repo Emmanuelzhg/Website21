@@ -1,7 +1,7 @@
 # Site settings
 baseURL = "https://emmanuelzheng.netlify.app/"
 languageCode = "en-us"
-title = "Emmanuel Zheng"
+title = "Emmanuel Zheng"output: html_document
 theme = "forty"
 
 # Enter your tracking code to enable Google Analytics
@@ -94,13 +94,13 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "About Me"
       subtitle = "My personal journey"
-      image = "pic01.jpg"
+      image = "Japan.jpg"
       url = "projects/about-me"
 
     [[params.tiles.showcase]]
       title = "Quantitative Investment Strategy - Master Thesis work"
       subtitle = "Analyzing a Volatility-Target Strategy on french CAC40 Index"
-      image = "pic02.jpg"
+      image = "QIS.jpg"
       url = "projects/qis"
 
     [[params.tiles.showcase]]
@@ -112,19 +112,19 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "Nordic GDP composition"
       subtitle = "Analysis of the three Nordic economies"
-      image = "pic04.jpg"
+      image = "sweden.jpg"
       url = "projects/nordic"
 
     [[params.tiles.showcase]]
       title = "Stocks Risk x Return Analysis"
       subtitle = "S&P500 vs Financials - 10 years Analysis"
-      image = "pic05.jpg"
+      image = "stock.jpg"
       url = "projects/sp500-financials-analysis"
 
     [[params.tiles.showcase]]
       title = "Climate Change"
       subtitle = "Reality or Illusion?"
-      image = "pic06.jpg"
+      image = "climate.jpg"
       url = "projects/Climate-change"
     # You can make more showcases by copy and pasting the code above
 

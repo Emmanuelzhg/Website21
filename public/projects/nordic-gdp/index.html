@@ -1,0 +1,336 @@
+<!DOCTYPE HTML>
+<html>
+
+    <head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="description" content="MFA student at London Business School">
+	<meta name="author" content="Emmanuel Zheng">
+	<meta name="generator" content="Hugo 0.75.1" />
+	<title>Nordic GDP composition &middot; Emmanuel Zheng</title>
+	<!-- Stylesheets -->
+	
+	<link rel="stylesheet" href="/css/main.css"/>
+	
+	
+
+	
+
+	<!-- Custom Fonts -->
+	<link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+	
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+	<link rel="icon" type="image/x-icon" href="/favicon.ico">
+	
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="js/ie/html5shiv.js"></script>
+	<script src="js/ie/html5shiv.jsrespond.min.js"></script>
+	<![endif]-->
+</head>
+
+    <body>
+
+    <!-- Wrapper -->
+        <div id="wrapper">
+
+            <!-- Header -->
+    <header id="header" class="alt">
+        <a href="/" class="logo"><strong>Portfolio website</strong> <span>Emmanuel Zheng - LBS MFA 2021</span></a>
+        <nav>
+            <a href="#menu">Menu</a>
+        </nav>
+    </header>
+
+<!-- Menu -->
+    <nav id="menu">
+        <ul class="links">
+            
+                <li><a href="/">About me</a></li>
+            
+                <li><a href="/projects">Projects</a></li>
+            
+                <li><a href="/projects/about-me">About me</a></li>
+            
+                <li><a href="/elements.html">Elements</a></li>
+            
+
+        </ul>
+        <ul class="actions vertical">
+            
+                <li><a href="/projects" class="button special fit">My projects</a></li>
+            
+            
+                <li><a href="/" class="button fit">Log In</a></li>
+            
+        </ul>
+    </nav>
+
+        <!-- Main -->
+            <div id="main" class="alt">
+
+                
+                    <section id="one">
+                        <div class="inner">
+                            <header class="major">
+                                <h1>Nordic GDP composition</h1>
+                            </header>
+                            
+                                <span class="image main"><img src="/img/projects/flags.jpg" alt="" /></span>
+                            
+                            <pre><code class="language-{r," data-lang="{r,">knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size=&quot;small&quot;)   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = &quot;center&quot;
+)
+</code></pre><h1 id="nordic-gdp-composition">Nordic GDP composition</h1>
+<p>In this project, we will look at the components of the different Nordic countries and then compare it to the rest of the world. There will be quite a lot of data wrangling, which is really good to know in R. Contrary to excel, it is quite hard to change individual rows in R, which instead primarily works in columns, i.e. it is quite easy to subtract one column from another, but a lot harder to subtract one row from another. Therefore we want to shape our R data so it is tidy data. What exactly is tidy data? Well it depends on what we want to achieve, but basically we want a column for every variable we are interested in. Data can be tidy for one use case but non-tidy for another.</p>
+<p>To analyze the Nordic GDP data, we will use the following packages.</p>
+<pre><code class="language-{r" data-lang="{r">library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(GGally)
+library(readxl)
+library(here)
+library(skimr)
+library(janitor)
+library(broom)
+library(tidyquant)
+library(infer)
+library(openintro)
+library(tidyquant)
+library(kableExtra)
+</code></pre><p>Our data comes from the <a href="https://unstats.un.org/unsd/snaama/Downloads">United Nations' National Accounts Main Aggregates Database</a>, which contains estimates of total GDP and its components for all countries from 1970 to today. We will look at how GDP and its components have changed over time, and compare different countries and how much each component contributes to that country&rsquo;s GDP. The file we will work with is <a href="http://unstats.un.org/unsd/amaapi/api/file/6">GDP and its breakdown at constant 2010 prices in US Dollars</a>. Let us start by loading the data and quickly skim it to see how it is how it is structured and organised.</p>
+<pre><code class="language-{r}" data-lang="{r}">
+UN_GDP_data  &lt;-  read_excel(here::here(&quot;data&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
+                sheet=&quot;Download-GDPconstant-USD-countr&quot;, # Sheet name
+                skip=2) # Number of rows to skip
+
+skim(UN_GDP_data)
+</code></pre><p>As  can be seen every year&rsquo;s value is a column. If we want to compare data between countries, this is not tidy, so instead we want one column with the country, one column with the year, and one column with the value. Let us also work in billions and change the name of the indicators we want to work with (recall that GDP = C + I + G -NX).</p>
+<pre><code class="language-{r}" data-lang="{r}"># First we make the data tidy
+tidy_GDP_data  &lt;-  UN_GDP_data %&gt;% 
+  pivot_longer(cols = !1:3, names_to = &quot;year&quot;, values_to = &quot;gdp_contribution&quot;) %&gt;% 
+ 
+  #we express gdp in billions, and furthermore we change the name of some of the indicators (only the ones we will use later)
+   mutate(gdp_contribution = gdp_contribution / 10^9,
+         
+         IndicatorName = case_when(
+           
+           IndicatorName == 'Household consumption expenditure (including Non-profit institutions serving households)' ~ &quot;Household expenditure&quot;,
+           
+           
+IndicatorName == 'General government final consumption expenditure' ~ &quot;Government expenditure&quot;,
+
+IndicatorName == 'Exports of goods and services' ~ &quot;Exports&quot;,
+
+IndicatorName == 'Imports of goods and services' ~ &quot;Imports&quot;,
+
+IndicatorName == 'Gross Domestic Product (GDP)' ~ &quot;GDP (given)&quot;,      
+
+TRUE ~ IndicatorName),
+
+year = as.numeric(year)) %&gt;% 
+
+filter(IndicatorName %in% c(&quot;Gross capital formation&quot;,&quot;Household expenditure&quot;, &quot;Government expenditure&quot;, &quot;Exports&quot;, &quot;Imports&quot;, &quot;GDP (given)&quot;))
+    
+
+
+# Let us compare GDP components for the Nordics
+country_list &lt;- c(&quot;Sweden&quot;,&quot;Denmark&quot;, &quot;Norway&quot;)
+# we filter only for the countries in the list.
+tidy_GDP_nordics &lt;- tidy_GDP_data %&gt;% 
+  filter(Country %in% country_list)
+
+</code></pre><p>Let us now plot the data.</p>
+<pre><code class="language-{r," data-lang="{r,">
+
+# fix levels
+tidy_GDP_nordics$IndicatorName &lt;- tidy_GDP_nordics$IndicatorName %&gt;% 
+  factor(levels = c(&quot;Gross capital formation&quot;, &quot;Exports&quot;, &quot;Government expenditure&quot;, &quot;Household expenditure&quot;, &quot;Imports&quot;, &quot;GDP (given)&quot;))
+
+
+#Furthermore we remove the GDP given column for the plot below
+
+gdp_plot1 &lt;- tidy_GDP_nordics %&gt;% 
+  filter(IndicatorName != &quot;GDP (given)&quot;)
+
+#let us create the plot
+gdp_plot1 %&gt;% 
+  ggplot(aes(x = year,
+             y = gdp_contribution,
+             group = IndicatorName))+
+  #create line
+  geom_line(aes(color = IndicatorName),
+            size = 1)+
+  # we use faceting so we can see it by countries
+  facet_wrap(~ Country)+
+  #aesthetics + titles
+  theme_bw()+
+  theme(legend.title = element_blank())+
+  labs(title = &quot;GDP components over time&quot;,
+       subtitle = &quot;In constant 2010 USD&quot;,
+       y = &quot;Billion US$&quot;,
+       x = &quot;&quot;)+
+  #make sure the x-axis breaks equal the one on the picture
+  scale_x_continuous(breaks = seq(1970, 2019, by = 10))
+                     
+</code></pre><p>So we see all components increasing over time - some more than others - but it is slightly hard to make out, so let us try and create a plot that shows the % components. To begin with let us calculate the GDP per country per year as we will need this to calculate the percentages. We want to do this because there is a difference between the GDP we calculate, and the GDP we were given in the original data set (as we will show below).</p>
+<pre><code class="language-{r}" data-lang="{r}">#First let us calculate the GDP given the inputs
+tidy_GDP_delta &lt;- tidy_GDP_nordics %&gt;% 
+  #We remove the given GDP
+  filter(IndicatorName != &quot;GDP (given)&quot;) %&gt;%
+  #We make imports value become negative (as it subtracts from GDP)
+  mutate(gdp_contribution = ifelse(IndicatorName == &quot;Imports&quot;,
+                                   -gdp_contribution,
+                                   gdp_contribution)) %&gt;% 
+  #Then we group by year and calculate the sum
+  group_by(year, Country) %&gt;% 
+  summarize(gdp_calc = sum(gdp_contribution)) 
+
+#Now we make a dataframe only consiting of the given GDP
+tidy_GDP_given &lt;- tidy_GDP_nordics %&gt;% 
+  filter(IndicatorName == &quot;GDP (given)&quot;)
+
+# we then join this with the original data frame
+
+left_join(tidy_GDP_delta, tidy_GDP_given, by = c(&quot;year&quot;, &quot;Country&quot;)) %&gt;% 
+  #And finally we calculate the absolute and relative differences
+  group_by(year, Country) %&gt;% 
+  summarize(absolute_diff = gdp_contribution-gdp_calc,
+            
+            percentage_diff = absolute_diff / gdp_contribution*100) %&gt;% 
+  #Let us find it by year
+  group_by(Country) %&gt;% 
+  summarize(absolute_diff = mean(absolute_diff),
+            percentage_diff = mean(percentage_diff)) %&gt;% 
+  kable(caption = &quot;Average annual difference between calculated and given GDP (negative values show a higher calculated GDP)&quot;,
+             col.names = c(&quot;Country&quot;, &quot;Absolute difference (billion USD)&quot;, &quot;Percentage difference&quot;),
+        #Fixes number of decimal points     
+        digits = 1,
+        # Adds thousand decimals and does not include scientific notation     
+        format.args = list(scientific = FALSE)) %&gt;%  
+  kable_material_dark(&quot;striped&quot;, full_width = FALSE)
+
+</code></pre><p>Instead of showing imports and exports, let us instead show net exports (exports - imports). Now we have a problem with tidy data again, as we cannot subtract rows from each other. So we have to transform so that each indicator has its own value, create a new column for net exports, and then retransform the data back as it looked before.</p>
+<pre><code class="language-{r," data-lang="{r,">#Firstly let us find net exports. The logic works like this:
+
+gdp_plot2 &lt;- tidy_GDP_nordics %&gt;% 
+  #We first make it wide format so we can mutate a new column
+  pivot_wider(names_from = IndicatorName, values_from = gdp_contribution) %&gt;% 
+  #we find net exports by subtracting imports from exports
+  mutate(&quot;Net exports&quot; = (Exports - Imports)) %&gt;% 
+  #we transfer it back into longer format
+  pivot_longer(cols = c(4:10), 
+               names_to = &quot;IndicatorName&quot;, 
+               values_to = &quot;gdp_contribution&quot;) %&gt;% 
+  #finally we join with the df we created earlier that has the calculated gdp
+  left_join(tidy_GDP_delta, by = c(&quot;year&quot;, &quot;Country&quot;)) %&gt;% 
+  #Now we can calculate the % of gdp that each indicator has
+  mutate(gdp_percentage = gdp_contribution / gdp_calc) %&gt;% 
+  #finally let us filter for only what we need
+  filter(IndicatorName %in% c(&quot;Household expenditure&quot;, &quot;Government expenditure&quot;, &quot;Gross capital formation&quot;, &quot;Net exports&quot;))
+
+#let us now recreate the plot
+ggplot(gdp_plot2, aes(x = year,
+                      y = gdp_percentage,
+                      group = IndicatorName))+
+  geom_line()+
+  #create line
+  geom_line(aes(color = IndicatorName),
+            size = 1)+
+  # we use faceting so we can see it by countries
+  facet_wrap(~ Country)+
+  #aesthetics + titles
+  theme_bw()+
+  theme(legend.title = element_blank())+
+  labs(title = &quot;Development in components of GDP&quot;,
+       subtitle = &quot;&quot;,
+       y = &quot;Proportion&quot;,
+       x = &quot;&quot;,
+       caption = &quot;Source: United Nations&quot;)+
+  #make sure the x-axis breaks equal the one on the picture
+  scale_x_continuous(breaks = seq(1970, 2019, by = 10))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))
+  
+</code></pre><p>Denmark and Sweden look quite similar in their development and levels, while Norway in particular exported a lot during the 80&rsquo;s, 90&rsquo;s and 00&rsquo;s. Why might this be? Well we can look at the characteristics of each economy.</p>
+<ul>
+<li>
+<p>Denmark is a fairly diversified open economy with large sectors in transport, health care and agriculture. These sectors are relatively do require some substantial investments.</p>
+</li>
+<li>
+<p>Sweden is a very industry-heavy economy producing a lot of durable goods. This requires a lot of investment as well. Sweden has been successful these past couple of years in exporting some of their companies abroad, e.g. Ikea and H&amp;M, which can have contributed to their increase in net exports.</p>
+</li>
+<li>
+<p>Norway is very oil-centric. Most large and mid-sized Norwegian companies are in some way related to the O&amp;G sector. This might be one of the reasons why we see a large increase in the net exports followed by a large decrease, as we have seen a continuous decrease in the oil price after the financial crisis.</p>
+</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>This project taught me the importance of data wrangling. It is a bit hard to understand what tidy data is, but once you are able to see it, it makes one&rsquo;s life in R so much simpler, and allows you to execute commands, which would otherwise be much harder to do.</p>
+
+                        </div>
+                    </section>
+            <!-- Disqus Inject -->
+                
+            </div>
+            
+        <!-- Footer -->
+            
+                <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+            <ul class="icons">
+                
+                    <li><a href="https://www.facebook.com/emmanuelzhg/" class="icon alt fa-facebook" target="_blank"><span class="label">Facebook</span></a></li>
+                
+                    <li><a href="https://www.instagram.com/emmanuelzhg/" class="icon alt fa-instagram" target="_blank"><span class="label">Instagram</span></a></li>
+                
+                    <li><a href="https://github.com/Emmanuelzhg/" class="icon alt fa-github" target="_blank"><span class="label">GitHub</span></a></li>
+                
+                    <li><a href="https://www.linkedin.com/in/emmanuel-zheng/" class="icon alt fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
+                
+            </ul>
+            <ul class="copyright">
+                <li>&copy; Emmanuel Zheng</li>
+                
+                <li>Design:  <a href="https://www.html5up.net">HTML5 UP</a></li>
+                
+            </ul>
+        </div>
+    </footer>
+
+            
+        </div>
+
+    <!-- Scripts -->
+        <!-- Scripts -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.scrolly.min.js"></script>
+    <script src="/js/jquery.scrollex.min.js"></script>
+    <script src="/js/skel.min.js"></script>
+    <script src="/js/util.js"></script>
+
+    
+
+    <!-- Main JS -->
+    <script src="/js/main.js"></script>
+
+    
+
+    
+
+    </body>
+</html>
