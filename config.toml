@@ -20,7 +20,7 @@ disqusShortname = ""
 
   # Provide your metadata here.
   name = "Emmanuel Zheng"
-  description = "My personal website"
+  description = "MFA student at London Business School"
 
   # Link custom assets relative to /static
   custom_css = []
@@ -48,12 +48,12 @@ disqusShortname = ""
       url = "#"
 
     [[params.navigation.links]]
-      name = "Blogs"
-      url = "blogs"
+      name = "Projects"
+      url = "Projects"
 
     [[params.navigation.links]]
-      name = "Generic Blog"
-      url = "blogs/ipsum"
+      name = "About me"
+      url = "aboutme"
 
     [[params.navigation.links]]
       name = "Elements"
@@ -83,7 +83,7 @@ disqusShortname = ""
     # the 'static/img' folder.
     title = "I'm Emmanuel - Welcome to my website !"
     subtitle = "I study financial analysis at London Business School and you can find more about my work"
-    buttonText = "Get Started"
+    buttonText = "My projects"
 
 
   # Tiles Section
@@ -95,37 +95,37 @@ disqusShortname = ""
       title = "About Me"
       subtitle = "My personal journey"
       image = "pic01.jpg"
-      url = "blogs/blog1"
+      url = "projects/aboutme"
 
     [[params.tiles.showcase]]
       title = "Quantitative Investment Strategy - Master Thesis work"
       subtitle = "Analyzing a Volatility-Target Strategy on french CAC40 Index"
       image = "pic02.jpg"
-      url = "blogs/blog2"
+      url = "projects/qis"
 
     [[params.tiles.showcase]]
       title = "Croatian currency trade"
       subtitle = "Analyzing potential currency trade between the Crotian Kuna and the Euro"
       image = "pic03.jpg"
-      url = "blogs/blog3"
+      url = "projects/croatian-currency"
 
     [[params.tiles.showcase]]
       title = "Nordic GDP composition"
       subtitle = "Analysis of the three Nordic economies"
       image = "pic04.jpg"
-      url = "blogs/blog4"
+      url = "projects/nordic"
 
     [[params.tiles.showcase]]
       title = "Stocks Risk x Return Analysis"
       subtitle = "S&P500 vs Financials - 10 years Analysis"
       image = "pic05.jpg"
-      url = "blogs/blog5"
+      url = "projects/sp500-financials-analysis"
 
     [[params.tiles.showcase]]
       title = "Climate Change"
       subtitle = "Reality or Illusion?"
       image = "pic06.jpg"
-      url = "blogs/blog6"
+      url = "projects/Climate-change"
     # You can make more showcases by copy and pasting the code above
 
   [params.blog]
@@ -191,32 +191,27 @@ disqusShortname = ""
   # Footer section
   [params.footer]
     enable = true
-    copyright = "Company Name"
+    copyright = "Emmanuel Zheng"
 
-    # Uses font awesome icons
-    [[params.footer.social]]
-      icon = "fa-twitter"
-      url= "https://www.twitter.com"
-      label = "Twitter"
 
     [[params.footer.social]]
       icon = "fa-facebook"
-      url= "https://www.facebook.com"
+      url= "https://www.facebook.com/emmanuelzhg/"
       label = "Facebook"
 
     [[params.footer.social]]
       icon = "fa-instagram"
-      url= "https://www.instagram.com"
+      url= "https://www.instagram.com/emmanuelzhg/"
       label = "Instagram"
     
     [[params.footer.social]]
       icon = "fa-github"
-      url= "https://www.github.com"
+      url= "https://github.com/Emmanuelzhg/"
       label = "GitHub"
 
     [[params.footer.social]]
       icon = "fa-linkedin"
-      url= "https://www.linkedin.com"
+      url= "https://www.linkedin.com/in/emmanuel-zheng/"
       label = "LinkedIn"
 
     [[params.footer.quicklinks]]
