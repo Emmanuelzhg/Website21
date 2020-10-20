@@ -128,9 +128,9 @@ disqusShortname = ""
       url = "blogs/Climate-change"
       
           [[params.tiles.showcase]]
-      title = "World Bank Data analysis : Life expectancy, GDP per Capita and Mortality rate"
-      subtitle = "Reality or Illusion?"
-      image = "climate.jpg"
+      title = "World Bank Data analysis : HIV, Life expectancy, GDP per Capita and Mortality rate"
+      subtitle = "Being well off, best vaccine against early death ?"
+      image = "world.jpg"
       url = "blogs/blog6"
     # You can make more showcases by copy and pasting the code above
 
