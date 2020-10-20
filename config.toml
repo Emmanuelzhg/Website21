@@ -126,6 +126,12 @@ disqusShortname = ""
       subtitle = "Reality or Illusion?"
       image = "climate.jpg"
       url = "blogs/Climate-change"
+      
+          [[params.tiles.showcase]]
+      title = "World Bank Data analysis : Life expectancy, GDP per Capita and Mortality rate"
+      subtitle = "Reality or Illusion?"
+      image = "climate.jpg"
+      url = "blogs/blog6"
     # You can make more showcases by copy and pasting the code above
 
   [params.blog]

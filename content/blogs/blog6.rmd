@@ -1,0 +1,325 @@
+---
+categories:
+- "finance"
+- ""
+date: "2020-10-19T22:26:09-05:00"
+description: "Analysis of a trading strategy for the Croatian currency - Investment strategy"
+draft: false
+image: pic10.jpg
+keywords: ""
+slug: blog6
+title: World bank data, Life expectancy, GDP per Capita and Mortality rate
+
+```{r load-libraries}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(GGally)
+library(readxl)
+library(here)
+library(skimr)
+library(janitor)
+library(broom)
+library(tidyquant)
+library(infer)
+library(openintro)
+library(tidyquant)
+library(kableExtra)
+```
+
+---
+# Gapminder revisited
+
+Let us look at the `gapminder` data frame from the gapminder package. That data frame contains just six columns from the larger [data in Gapminder World](https://www.gapminder.org/data/). In this part, we will join a few dataframes with more data than the 'gapminder' package. Specifically, we will look at data on 
+
+
+- Life expectancy at birth (life_expectancy_years.csv)
+- GDP per capita in constant 2010 US$ (https://data.worldbank.org/indicator/NY.GDP.PCAP.KD)
+- Female fertility: The number of babies per woman (https://data.worldbank.org/indicator/SP.DYN.TFRT.IN)
+- Primary school enrollment as % of children attending primary school (https://data.worldbank.org/indicator/SE.PRM.NENR)
+- Mortality rate, for under 5, per 1000 live births (https://data.worldbank.org/indicator/SH.DYN.MORT)
+- HIV prevalence (adults_with_hiv_percent_age_15_49.csv): The estimated number of people living with HIV per 100 population of age group 15-49.
+
+First let us get the data
+
+```{r, get_data, cache=TRUE}
+
+# load gapminder HIV data
+hiv <- read_csv(here::here("data","adults_with_hiv_percent_age_15_49.csv"))
+life_expectancy <- read_csv(here::here("data","life_expectancy_years.csv"))
+
+# get World bank data using wbstats
+indicators <- c("SP.DYN.TFRT.IN","SE.PRM.NENR", "SH.DYN.MORT", "NY.GDP.PCAP.KD")
+
+
+library(wbstats)
+
+worldbank_data <- wb_data(country="countries_only", #countries only- no aggregates like Latin America, Europe, etc.
+                          indicator = indicators, 
+                          start_date = 1960, 
+                          end_date = 2016)
+
+# get a dataframe of information regarding countries, indicators, sources, regions, indicator topics, lending types, income levels,  from the World Bank API 
+countries <-  wbstats::wb_cachelist$countries
+
+```
+
+We will join the 3 dataframes (life_expectancy, worldbank_data, and HIV) into one. 
+
+Inspecting the three data frames, we see that each year is a column for hiv and life_expectancy, which we would instead like to be a row (such that we only have one column named year). After that we can join with worldbank_data, which already has this format. This makes it possible to plot data for each country for each year fairly easily as we can use the year column, rather than having a column for each year.
+
+
+```{r}
+
+# first we make hiv data tidy by using pivot_longer function. We also make sure year column is numeric as we need to join it with the two other tables later
+tidy_hiv <- hiv %>% 
+  pivot_longer(!1, names_to = "year", values_to = "hivPercent") %>% 
+  mutate(year = as.numeric(year))
+
+
+
+# we do the same for life expectancy data
+tidy_life_expectancy <- life_expectancy %>% 
+  pivot_longer(!1, names_to = "year", values_to = "lifeExp") %>% 
+  mutate(year = as.numeric(year))
+
+# We now join the two data tables - first by renaming the date column from WB data to year to be able to join the data frames
+wb_hiv_life <- worldbank_data %>% 
+  rename(year = date) %>% 
+  # Now we then join both data tables by country and year
+  left_join(tidy_hiv, join_by = c("country", "year")) %>% 
+  left_join(tidy_life_expectancy, join_by = c("country", "year")) 
+
+# Let us just look at the data to see if it works
+
+glimpse(wb_hiv_life)
+
+# It works!
+
+```
+
+Now let us answer the following 
+
+1. What is the relationship between HIV prevalence and life expectancy? Generate a scatterplot with a smoothing line to report your results. You may find faceting useful
+
+There are a lot of background variables that we would have to take into account for here, with the two main ones being time, i.e. life expectancy generally has increased over time due to medical advances, and differences in developments of each nations. In this case, since we are only looking at data from the 1980s and on, it should be fine with ignoring the time background variable, however, we should group countries by region instead to account for this difference. Let us use the `countrycode` package to add a column with continent.
+
+```{r}
+# Adds a new column with region data
+wb_hiv_life_region <- wb_hiv_life
+wb_hiv_life_region$continent <- countrycode(sourcevar = wb_hiv_life_region$iso3c,
+                                     origin = "iso3c",
+                                     destination = "continent")
+
+# Two countries could not be matched, XKX and CHI for iso3c, and consequently we exclude these from the data
+wb_hiv_life_region <- wb_hiv_life_region %>%
+  mutate(continent = as.factor(continent)) %>% 
+  filter(continent != "NA")
+
+# we now create the plot
+ggplot(wb_hiv_life_region, aes(x=hivPercent,
+                        y=lifeExp)) +
+  # Adds points and the regression line
+  geom_point(alpha=0.1)+
+  geom_smooth(color = "red")+
+  #fixes aesthetics
+  labs(title="Countries with high HIV rates generally have \nlower life expectancy",
+       subtitle="Relationship between HIV prevalence and life expectancy",
+       x="HIV prevalence (%)",
+       y="Life expectancy") +
+  theme_bw()+
+  # Facets graphs by continent and make scale of x-axis independent of each other
+  facet_wrap(~continent, scales = "free")
+```
+
+Given the very low levels of HIV prevalence in Europe, Asia, and Oceania, it is arguably not possible to conclude anything here. For Americas there are a few more observations and we do see a tendency for life expectancy to decrease as HIV prevalence is higher. Likewise we see this tendency in Africa, however, this only persists until around a prevalence of 10% after which the effect is neglible.
+Again it can be hard to conclude anything definitely because there are a lot of background variables at play here.
+
+1. What is the relationship between fertility rate and GDP per capita? Generate a scatterplot with a smoothing line to report your results. You may find facetting by region useful
+
+```{r}
+# Creates plot
+ggplot(wb_hiv_life_region, aes(x=NY.GDP.PCAP.KD,
+                               y=SP.DYN.TFRT.IN)) +
+  # creates points and tendency line (using straight line)
+  geom_point(alpha=0.1)+
+  geom_smooth(method = "lm") +
+  # Aesthetics
+  labs(title="Richer societes generally have fewer children",
+       subtitle="Relationship between GDP per capita and fertility rate by continent",
+       x="GDP per capita",
+       y="Fertility rate") +
+  theme_bw()+
+  theme(axis.text = element_text(size = 6))+
+  # Facets the graph by continent
+  facet_wrap(~continent, scales = "free")
+
+#Calculates the correlation coefficient - last argument ignores NA values
+cor(wb_hiv_life_region$NY.GDP.PCAP.KD,
+    wb_hiv_life_region$SP.DYN.TFRT.IN, 
+    use = "complete.obs")
+```
+We definitely see a decrease in the fertility rate as gdp per capita increases. However, the relationship does not seem to be fully linear but rather exponentially decreasing until it reaches a steady state where fertility does not change too much. The rationale for this would be that poor countries lack sexual education / access to contraceptives and have higher childhood mortality but these barriers decrease as wealth increases, which prompts a decrease in fertility until around a fertility of 2, which sustains the existing population. These observations persist when we look at the correlation between the two variables, which is negative.
+
+1. Which regions have the most observations with missing HIV data? Generate a bar chart (`geom_col()`), in descending order.
+
+```{r}
+
+# The HIV data sets only runs from 1979 to 2011, so let us remove all other years first
+hiv_NAs <- wb_hiv_life_region %>%
+  group_by(continent) %>%
+  filter(year %in% c(1979:2011)) %>% 
+ # Let us then calculate the regions data. We also include a proportion to make it comparable because there is a different number of countries in each region
+  summarize(hiv_na = sum(is.na(hivPercent)),
+            prop = round(hiv_na/n(),digits=3) * 100) 
+
+# Plot of observations - we use reorder() to make it descending
+ggplot(hiv_NAs, aes(x = reorder(continent, hiv_na),
+                   y=hiv_na))+ 
+  geom_col(fill="Dark Blue")+ 
+  theme_bw()+
+  coord_flip()+
+  labs(title = "Asia has most missing observations",
+       subtitle = "Number of missing HIV prevalence observations per region", 
+       y = "HIV missing data",
+       x = "Continent")+
+  geom_text(aes(label = hiv_na),
+            vjust = 0.5,
+            hjust = 1.5,
+            angle = 0,
+            color = "White")
+
+
+
+#Plot of % - again we use reorder() to make it descending
+ggplot(hiv_NAs, aes(x = reorder(continent, prop),
+                        y = prop))+ 
+  geom_col(fill="Dark Blue")+ 
+  theme_bw()+
+  coord_flip()+
+  labs(title="Oceania with relative highest  % of missing data",
+       subtitle="Proportion of missing HIV data per continent",
+       y="missing data (%)",
+       x="Continent")  +
+  geom_text(aes(label=prop), 
+            vjust=0.5,
+            hjust=1.5,
+            angle=0, 
+            color="white", 
+            size=4) 
+
+```
+
+
+1. How has mortality rate for under 5 changed by region? In each region, find the top 5 countries that have seen the greatest improvement, as well as those 5 countries where mortality rates have had the least improvement or even deterioration.
+
+Since there is no defined period for how the mortality rate has changed, let us look at the period of 1966-2016 - over the last 50 years
+
+```{r}
+
+# We filter the data between 1966 (initial year) and 2016 (final year) and we untidy it - we do this because it is then easier to compare the delta in mortality rate
+mortality_change <- wb_hiv_life_region %>%
+                select(c("country",
+                         "continent",
+                         "year",
+                         "SH.DYN.MORT")) %>% 
+                filter(year == "1966" | year == "2016") %>%
+                pivot_wider(names_from = "year",
+                            values_from = "SH.DYN.MORT")
+  
+
+colnames(mortality_change) = c("country", "continent", "Y1966", "Y2016")
+
+mortality_comp <- mortality_change %>% 
+  # We find the % difference
+mutate(delta = (Y2016 - Y1966)/ Y1966) %>% 
+group_by(continent) %>%
+summarize(country, delta) %>%
+  # Arranges in descending order
+arrange(continent, desc(delta))
+
+ # We find the top 5 countries - observe we want the lowest values as a decrease is an improvement
+best5_region <- mortality_comp %>%
+            slice_min(order_by = delta,
+                      n = 5) %>%
+            summarize(country,
+                      delta)
+
+# let us do the same for the bottom five
+worst5_region <- mortality_comp %>%
+    slice_max(order_by = delta,
+              n=5) %>%
+  summarize(country,
+            delta)
+
+
+# let us now create the plot for the top 5 countries
+ggplot(best5_region, aes(x = reorder(country, -delta),
+                        y = abs(delta))) +
+  geom_col(fill="Dark green")+ 
+  #Flips orientation of graph
+  coord_flip()+ 
+  #Facets by continent
+  facet_wrap(~continent, 
+             scales = "free") + 
+  labs(title="Asia's top 5 countries have on average had the best improvements",
+       subtitle="Change in childhood mortality rates between 1966 and 2016 for \ntop 5 countries per region",
+       y="Change in mortality rate",
+       x="")+
+  theme(axis.text.x = element_blank())+
+  #Adds values on column - we transform the data to %
+  geom_text(aes(label = scales::percent(delta, accuracy = 0.1)), 
+            vjust=0.5,
+            hjust=1,
+            angle=0, 
+            color="white", 
+            size=2.5) 
+
+# let us now create the plot for the worst 5 countries
+ggplot(worst5_region, aes(x = reorder(country, -delta),
+                        y = abs(delta))) +
+  geom_col(fill="Red2")+ 
+  #Flips orientation of graph
+  coord_flip()+ 
+  # Facets graph
+  facet_wrap(~continent, 
+             scales = "free") + 
+  labs(title="Even the worst countries have seen significant improvements \nto their childhood mortality rate",
+       subtitle="Change in childhood mortality rates between 1966 and 2016 for \nbottom 5 countries per region",
+       y="Change in mortality rate",
+       x="")+
+  theme(axis.text.x = element_blank())+
+  #Adds values on column - we transform the data to %
+  geom_text(aes(label = scales::percent(delta, accuracy = 0.1)), 
+            vjust=0.5,
+            hjust=1,
+            angle=0, 
+            color="white", 
+            size=2.5) 
+```
+
+
+1. Is there a relationship between primary school enrollment and fertility rate?
+
+
+```{r}
+# We create the plot based on the two variables from the WB data
+ggplot(wb_hiv_life_region, aes(x = SE.PRM.NENR, y = SP.DYN.TFRT.IN))+
+  #Creates scatter plot and trendline
+  geom_point(alpha = 0.1)+
+  geom_smooth(method = "lm")+
+  #Groups by continent - we let the x-axis scale be dependent on data on region, as e.g. Europe has very high rates already
+  facet_wrap(~continent, 
+             scales = "free_x")+
+  # Aesthetics
+  theme_bw()+
+  labs(title = "Countries with higher enrollment rates generally \nhave lower fertility rates", 
+       subtitle = "Relationship between primary school enrollment rates \nand fertility rate; data from 1960-2016",
+       x = "Primary school enrollment (%)",
+       y = "Fertility rate")
+
+```
+We see a negative relationship, which makes sense, higher enrollment rates mean a more educated society, which has two major effects: (1) Education generally increases wealth of a society, providing more access to contraceptives and less of a need to have children to use for labour in e.g. agriculture, and (2) higher enrollment rates may mean that more women are getting an education and thereby becoming financially independent from males, such that they get to have more of a say in family decisions and do not need to get married young.
+
+Again here there may be a lot of background variables that could influence the result, time potentially being one of them. Here we look at the whole time period, but one tweak for further analysis would be to look at individual years or decades. Alternatively we could look at the change for countries over time, to see what happens as the enrollment rates changes.
+
