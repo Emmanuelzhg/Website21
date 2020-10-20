@@ -114,18 +114,6 @@ disqusShortname = ""
       subtitle = "Analysis of the three Nordic economies"
       image = "sweden.jpg"
       url = "blogs/blog4"
-
-    [[params.tiles.showcase]]
-      title = "Stocks Risk x Return Analysis"
-      subtitle = "S&P500 vs Financials - 10 years Analysis"
-      image = "stock.jpg"
-      url = "blogs/sp500-financials-analysis"
-
-    [[params.tiles.showcase]]
-      title = "Climate Change"
-      subtitle = "Reality or Illusion?"
-      image = "climate.jpg"
-      url = "blogs/Climate-change"
       
           [[params.tiles.showcase]]
       title = "World Bank Data analysis : HIV, Life expectancy, GDP per Capita and Mortality rate"
