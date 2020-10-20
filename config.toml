@@ -101,7 +101,7 @@ disqusShortname = ""
       title = "Quantitative Investment Strategy - Master Thesis work"
       subtitle = "Analyzing a Volatility-Target Strategy on french CAC40 Index"
       image = "QIS.jpg"
-      url = "blogs/qis"
+      url = "blogs/blog2"
 
     [[params.tiles.showcase]]
       title = "Croatian currency trade"

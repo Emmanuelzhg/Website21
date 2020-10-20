@@ -10,11 +10,9 @@ description: ""
 draft: false
 image: image-mount.jpg
 keywords: ""
-slug: blog1
+slug: blog2
 title: About me
 ---
-
-![Image](https://photos.mandarinoriental.com/is/image/MandarinOriental/paris-2017-home?wid=2880&hei=1280&fmt=jpeg&crop=9,336,2699,1200&anchor=1358,936&qlt=75,0&fit=wrap&op_sharpen=0&resMode=sharp2&op_usm=0,0,0,0&iccEmbed=0&printRes=72.jpg)
 
 ## Personal background
 I am 21 years old and grew up in Paris then moved to Mulhouse, France.
@@ -28,21 +26,15 @@ Realized my childhood dream of visiting Japan during Christmas 2018
 Team ranked 2nd of Mirage EDHEC Business Game Dec 2019 (against more than 300 competitors)
 Ran a semi-marathon in August 2019 ! Next goal ➡Full Marathon !!
 
-![Image](https://www.ualberta.ca/business/media-library/international/images/outgoing/destinations/edhec-nice-campus1.jpg)
 
 ## Educational background
 I studied my undergrad in Business Administration with a major in Finance at **EDHEC Business School** from 2016 to 2019. As part of the degree, I had one semester abroad, I chose to go to **Hanyang University, Seoul South Korea**. Seoul was very different from Paris and the lifelong friends I made there definitely motivated me to study abroad for my master's degree and I was lucky enough to get admitted to **London Business School**, where I study right now.
-
-![Image](https://www.ef.com/wwen/blog/wp-content/uploads/2017/09/Visit_Seoul_web.jpg)
 
 
 ## Work experience
 I have acquired a 1 year work experience during my undergraduate studies. First, I interned at **Credit du Nord Retail Banking**. In fact, I used to be part of the **KYC team**. I then joined a French software start-up. It was a unique occasion to experience how innovative idea can be implemented. After that, I joined **Credit Mutuel Asset Management**, within the **Fund Accounting division**. Finally, I joined **Société Générale Corporate and Investment Banking** as a **Product Specialist for their Quantitative Investment Strategies** department.
 
-![Image](https://media.parisladefense.com/kFgA60O0qbYyxlHsUwjOogGlrAo=/1160x450/legacy/pois/building/vues-du-toit-de-la-grande-arche_bd_11h45-pour-defacto_2015-27.png)
 
 ## Contact details
 
 Please feel free to shoot me an e-mail at ezheng.mfa2021@london.edu if you want to connect. Alternatively you can connect with me on my social media accounts - you can see the links at the bottom of the page.
-
-![Image](https://london.ac.uk/sites/default/files/styles/max_1300x1300/public/2017-10/london-business-school-Campus.jpg?itok=liDdbRa2.png)
