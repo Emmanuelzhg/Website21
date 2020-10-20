@@ -1,5 +1,5 @@
 ---
-title: "About me"
+title: "About my undergarduate thesis : Volatility-Target Strategy"
 output: html_document
 
 categories:
@@ -8,7 +8,7 @@ categories:
 date: "2019-10-31T21:28:43-05:00"
 description: ""
 draft: false
-image: image-mount.jpg
+image: finance.jpg
 keywords: ""
 slug: blog2
 title: About me
