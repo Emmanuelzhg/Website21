@@ -1,8 +1,16 @@
 ---
-date: "2020-10-11T22:27:21-05:00"
+title: "About me"
+output: html_document
+
+categories:
+- ""
+- ""
+date: "2019-10-31T21:28:43-05:00"
+description: ""
 draft: false
-image: aboutme/copenhagen.jpg
-slug: aboutme
+image: pic10.jpg
+keywords: ""
+slug: About me
 title: About me
 ---
 
