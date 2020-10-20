@@ -7,7 +7,7 @@ description: "Analysis of a trading strategy for the Croatian currency - Investm
 draft: false
 image: pic10.jpg
 keywords: ""
-slug: Currency long
+slug: croatian-currency
 title: Long Currency trade
 ---
 

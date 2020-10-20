@@ -8,7 +8,7 @@ categories:
 date: "2019-10-31T21:28:43-05:00"
 description: ""
 draft: false
-image: pic10.jpg
+image: image-mount.jpg
 keywords: ""
 slug: About me
 title: About me
