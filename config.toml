@@ -37,8 +37,8 @@ disqusShortname = ""
 
   # Navigation Section
   [params.navigation]
-    title = "Portfolio website"
-    subtitle = "Emmanuel Zheng - LBS MFA 2021"
+    title = "Emmanuel Zheng - LBS MFA 2021"
+    subtitle = "LBS MFA 2021 - EDHEC Business School Alumnus"
     menu = "Menu"
     # Optional logo as brand stored in img/
     # logo = "logo.png"
