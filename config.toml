@@ -95,7 +95,7 @@ disqusShortname = ""
       title = "About Me"
       subtitle = "My personal journey"
       image = "pic01.jpg"
-      url = "projects/aboutme"
+      url = "projects/about-me"
 
     [[params.tiles.showcase]]
       title = "Quantitative Investment Strategy - Master Thesis work"
